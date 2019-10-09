@@ -64,10 +64,19 @@ Or, you can use events instead of a callback. For example, to be notified when e
 
 ```js
 app.post('/submit-form', (req, res) => {
-  new formidable.IncomingForm().parse(req)
+  let form = new formidable.IncomingForm();
+  
+  // you can change the upload directory here like this
+  form.uploadDir = '/uploads/'; 
+  
+  form
     .on('field', (name, field) => {
       console.log('Field', name, field)
     })
+    .on('fileBegin', (name, file) => {
+      // it's also possible to set the upload directory for individual files here like:
+      file.path = '/otherUploads/';
+    }
     .on('file', (name, file) => {
       console.log('Uploaded file', name, file)
     })
@@ -81,6 +90,8 @@ app.post('/submit-form', (req, res) => {
     .on('end', () => {
       res.end()
     })
+    
+    form.parse(req);
 })
 ```
 
